@@ -15,12 +15,16 @@ class PremiumizeMeCollector(Addon):
   __license__ = "GPLv3"
   __authors__ = [("Jan-Olaf Becker", "job87@web.de")]
 
-  def activated(self):
-    self.log_debug('Activating with interval: %s' % interval)
+  def activate(self):
+    self.info['activated'] = True
+    self.log_debug('Activating with interval: {0} s'.format(self.config.get('interval')))
     self.periodical.start(self.config.get('interval'))
 
-  def deactivated(self):
-    self.log_debug('Deactivating')
+  def deactivate(self):
+    self.info['activated'] = False
+    self.log_debug('Deactivate')
+    self.periodical.stop()
 
   def periodical_task(self):
     self.log_debug('Running periodically...')
+
