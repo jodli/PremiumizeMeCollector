@@ -33,12 +33,17 @@ class PremiumizeMeCollector(Addon):
   def periodical_task(self):
     self.log_debug('Running periodically...')
     self.get_info(self.config.get('customerId'), self.config.get('pin'))
+    self.get_folder_entries(self.config.get('customerId'), self.config.get('pin'), "")
+    self.get_folder_entries(self.config.get('customerId'), self.config.get('pin'), "AMp43Zx6F1avhAyKJgyxlQ")
 
-  def api_respond(self, method, user, password, **kwargs):
-    kwargs['customer_id'] = user
-    kwargs['pin'] = password
-    html = self.load(self.API_URL + method, get=kwargs)
+  def api_respond(self, method, user, password, params = None):
+    if params is None:
+      params = {}
 
+    params['customer_id'] = user
+    params['pin'] = password
+
+    html = self.load(self.API_URL + method, get=params)
     return json.loads(html)
 
   def get_info(self, user, password):
@@ -46,7 +51,24 @@ class PremiumizeMeCollector(Addon):
     
     result = self.api_respond("account/info", user, password)
 
-    if result['status'] != success:
+    if result['status'] != "success":
       self.log_error("Call failed: " + result['message'])
     else:
       self.log_debug("Result: " + str(result))
+
+  def get_folder_entries(self, user, password, folder_id = None):
+    self.log_debug("Calling folder/list")
+
+    params = None
+    if not folder_id is None:
+      params = {'id': folder_id}
+
+    result = self.api_respond("folder/list", user, password, params)
+
+    if result['status'] != "success":
+      self.log_error("Call failed: " + result['message'])
+    else:
+      self.log_debug("Result: " + str(result))
+
+
+
