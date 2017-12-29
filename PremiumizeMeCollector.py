@@ -32,10 +32,11 @@ class PremiumizeMeCollector(Addon):
 
   def periodical_task(self):
     self.log_debug('Running periodically...')
-    self.get_info(self.config.get('customerId'), self.config.get('pin'))
-    self.get_folder_entries(self.config.get('customerId'), self.config.get('pin'), "")
+    #self.get_info(self.config.get('customerId'), self.config.get('pin'))
+    files = self.get_files_in_folder(self.config.get('customerId'), self.config.get('pin'), "")
+    self.log_debug(str(files))
     #self.get_folder_entries(self.config.get('customerId'), self.config.get('pin'), "AMp43Zx6F1avhAyKJgyxlQ")
-    self.add_package("name123", "link123")
+    #self.add_package("name123", "link123")
 
   def api_respond(self, method, user, password, params = None):
     if params is None:
@@ -57,7 +58,7 @@ class PremiumizeMeCollector(Addon):
     else:
       self.log_debug("Result: " + str(result))
 
-  def get_folder_entries(self, user, password, folder_id = None):
+  def get_files_in_folder(self, user, password, folder_id = None):
     self.log_debug("Calling folder/list for id " + str(folder_id))
 
     params = None
@@ -66,10 +67,20 @@ class PremiumizeMeCollector(Addon):
 
     result = self.api_respond("folder/list", user, password, params)
 
+    files = {}
     if result['status'] != "success":
       self.log_error("Call failed: " + result['message'])
     else:
       self.log_debug("Result: " + str(result))
+      for entry in result['content']:
+        self.log_debug(str(entry))
+        if entry['type'] != "file":
+          self.log_debug("not a file.")
+        else:
+          self.log_info("Found a file: " + entry['name'])
+          self.log_info("with link: " + entry['link'])
+          files[entry['name']] = entry['link']
+    return files
 
   def add_package(self, name, link):
     self.log_debug("Adding package with name: " + name)
