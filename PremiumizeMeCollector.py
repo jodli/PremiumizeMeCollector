@@ -34,7 +34,8 @@ class PremiumizeMeCollector(Addon):
     self.log_debug('Running periodically...')
     self.get_info(self.config.get('customerId'), self.config.get('pin'))
     self.get_folder_entries(self.config.get('customerId'), self.config.get('pin'), "")
-    self.get_folder_entries(self.config.get('customerId'), self.config.get('pin'), "AMp43Zx6F1avhAyKJgyxlQ")
+    #self.get_folder_entries(self.config.get('customerId'), self.config.get('pin'), "AMp43Zx6F1avhAyKJgyxlQ")
+    self.add_package("name123", "link123")
 
   def api_respond(self, method, user, password, params = None):
     if params is None:
@@ -57,7 +58,7 @@ class PremiumizeMeCollector(Addon):
       self.log_debug("Result: " + str(result))
 
   def get_folder_entries(self, user, password, folder_id = None):
-    self.log_debug("Calling folder/list")
+    self.log_debug("Calling folder/list for id " + str(folder_id))
 
     params = None
     if not folder_id is None:
@@ -70,5 +71,10 @@ class PremiumizeMeCollector(Addon):
     else:
       self.log_debug("Result: " + str(result))
 
+  def add_package(self, name, link):
+    self.log_debug("Adding package with name: " + name)
+    self.log_debug("and link: " + link)
 
+    pid = self.pyload.api.addPackage(name, [link], 0)
 
+    self.log_debug("to collector. pid: " + str(pid))
